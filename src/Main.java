@@ -63,7 +63,6 @@ public class Main {
         System.out.println("2. Leer Archivo");
         System.out.println("3. Escribir Archivo");
         System.out.println("4. XXXXXXXXXXXXXXX");
-        System.out.println("5. XXXXXXXXXXXXXXX");
         System.out.println("0. Salir");
         System.out.println();
         System.out.print("Ingrese una opcion: ");
