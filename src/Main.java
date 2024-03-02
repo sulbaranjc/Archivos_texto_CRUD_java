@@ -1,15 +1,13 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.util.InputMismatchException;
 import java.util.Locale;
 import java.util.Scanner;
-import java.io.FileReader;
 
 public class Main {
     static String nombreCarpeta = "./data/";
-    static String nombreF = "";
+    static String nombreFichero = "data.txt";
 
-    static String nombreFichero = nombreCarpeta+nombreF;
+    static String nombreFicherCompleto = nombreCarpeta+nombreFichero;
     static Scanner scannerStr = new Scanner(System.in);
     static Scanner scannerNum = new Scanner(System.in).useLocale(Locale.US);
 
@@ -24,11 +22,13 @@ public class Main {
                 switch (opcion) {
                     case 1:
                         nombreFichero = leerCarpeta();
+                        nombreFicherCompleto = nombreCarpeta+nombreFichero;
                         break;
                     case 2:
                         leerArchivo();
                         break;
                     case 3:
+                        escribirArchivo();
                         break;
                     case 4:
                         break;
@@ -39,6 +39,11 @@ public class Main {
                         System.out.println("Opcion no valida");
                         break;
                 }
+            } catch (IOException e) {
+                System.out.println("Error de IO: " + e.getMessage());
+            } catch (InputMismatchException ime) {
+                System.out.println("Entrada no válida, por favor introduce un número.");
+                scannerNum.next(); // Limpiar buffer de entrada
             } catch (Exception e) {
                 System.out.println("Ha ocurrido un error: " + e.getMessage());
             }
@@ -56,7 +61,7 @@ public class Main {
 
         System.out.println("1. Cambiar Nombre del Archivo");
         System.out.println("2. Leer Archivo");
-        System.out.println("3. XXXXXXXXXXXXXXX");
+        System.out.println("3. Escribir Archivo");
         System.out.println("4. XXXXXXXXXXXXXXX");
         System.out.println("5. XXXXXXXXXXXXXXX");
         System.out.println("0. Salir");
@@ -84,9 +89,9 @@ public class Main {
            if (numFile == listaDeArchivos.length + 1) {
                System.out.print("Ingrese el nombre del archivo: ");
                nombreFichero = scannerStr.nextLine();
-               return (nombreCarpeta + nombreFichero);
+               return (nombreFichero);
            }
-           return (nombreCarpeta + listaDeArchivos[numFile - 1].getName());
+           return (listaDeArchivos[numFile - 1].getName());
        }
          return nombreFichero;
     }
@@ -95,34 +100,37 @@ public class Main {
         nombreFichero = leerCarpeta();
     }
 
-    private static void leerArchivo() {
-        File archivo = new File(nombreFichero);
-        BufferedReader lector = null;
+    private static void leerArchivo() throws IOException {
+        File archivo = new File(nombreFicherCompleto);
 
-        try {
-            lector = new BufferedReader(new FileReader(archivo));
+        System.out.println("Contenido del archivo:");
+        System.out.println("======================================================================");
+
+        try (BufferedReader lector = new BufferedReader(new FileReader(archivo))) {
             String linea;
-
-            System.out.println("Contenido del archivo:");
-            System.out.println("======================================================================");
-
             while ((linea = lector.readLine()) != null) {
                 System.out.println(linea);
             }
             System.out.println("presione enter para continuar...");
             scannerStr.nextLine();
             System.out.println("======================================================================");
-        } catch (IOException e) {
-            System.out.println("Ha ocurrido un error al leer el archivo: " + e.getMessage());
-        } finally {
-            if (lector != null) {
-                try {
-                    lector.close();
-                } catch (IOException e) {
-                    System.out.println("Error al cerrar el archivo: " + e.getMessage());
-                }
-            }
         }
     }
+    private static void escribirArchivo() throws IOException {
+        String texto;
+        System.out.print("¿Quieres editar el fichero? (S/N)");
+        String respuesta = scannerStr.nextLine();
+        boolean editarFichero = !respuesta.toUpperCase().equals("N");
 
+        try (BufferedWriter escritura = new BufferedWriter(new FileWriter(nombreFicherCompleto, editarFichero))) {
+            do {
+                System.out.println("Introduce texto (FIN para terminar)");
+                texto = scannerStr.nextLine();
+                if (!texto.toUpperCase().equals("FIN")) {
+                    escritura.write(texto);
+                    escritura.newLine();
+                }
+            } while (!texto.toUpperCase().equals("FIN"));
+        }
+    }
 }
