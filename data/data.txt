@@ -1,4 +1,6 @@
-nueva linea 1
-1
-2
-3
+hola
+
+SOY JUAN CARLOS SULBARAN
+hola
+esta es una prueba
+para finzalizar el archivo debes escribir fin <-| ENTER |
